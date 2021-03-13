@@ -1,0 +1,46 @@
+<!-- <div class="alert alert-success" role="alert">
+ Please Login Here.
+</div> -->
+
+<!-- <button 
+  class="btn btn-outline-warning" 
+  (click)="login(Role.User)">Login as User</button>
+
+<button 
+  class="btn btn-outline-danger" style="margin-left: 10px;"
+  (click)="login(Role.Admin)">Login as Admin</button> -->
+
+  
+<div class="container"  novalidate>
+  <form [formGroup]="formGroup" (ngSubmit)="onSubmit(formGroup.value)" class="form">
+
+    <mat-form-field class="form-element">
+      <input matInput placeholder="Email Address" formControlName="email">
+      <mat-error *ngIf="!formGroup.controls['email'].valid && formGroup.controls['email'].touched">
+        {{ getErrorEmail() }}
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field class="form-element">
+      <input matInput type="password" placeholder="Password" formControlName="password">
+      <mat-hint>Choose a password of at least eight characters, one uppercase letter and one number</mat-hint>
+      <mat-error *ngIf="!formGroup.controls['password'].valid && formGroup.controls['password'].touched">
+        {{ getErrorPassword() }}
+      </mat-error>
+    </mat-form-field>
+
+    <div class="form-element">
+      <button mat-raised-button color="primary" type="submit" class="button" [disabled]="!isFormInfoValid">Submit
+        Form</button>
+    </div>
+  </form>
+</div>
+
+  <div class="container" *ngIf="message">
+    <div *ngIf="!logoutNeeded || message">
+       {{ message  }}
+    </div>
+    <div *ngIf="logoutNeeded">
+      <a class="nav-link" style="cursor: pointer;" (click)="navigateToPath()">Logout</a>
+    </div>
+  </div>

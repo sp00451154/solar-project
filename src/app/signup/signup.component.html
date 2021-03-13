@@ -1,0 +1,57 @@
+
+<div class="container" *ngIf="!message; else forminfo" novalidate>
+  <form [formGroup]="formGroup" (ngSubmit)="onSubmit(formGroup.value)" class="form">
+
+    <mat-form-field class="form-element">
+      <input matInput placeholder="User Name" formControlName="userName">
+      <mat-error *ngIf="!userName.valid && userName.touched">
+        {{ titleAlert }}
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field class="form-element">
+      <input matInput placeholder="Email Address" formControlName="email">
+      <mat-error *ngIf="!formGroup.controls['email'].valid && formGroup.controls['email'].touched">
+        {{ getErrorEmail() }}
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field class="form-element">
+      <textarea matInput placeholder="Phone" 
+        formControlName="phone"></textarea>
+      <mat-error *ngIf="!formGroup.controls['phone'].valid && !formGroup.controls['phone'].min && formGroup.controls['phone'].touched">
+        Required field, must be  10 characters.
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field class="form-element">
+      <input matInput type="password" placeholder="Password" formControlName="password">
+      <mat-hint>Choose a password of at least eight characters, one uppercase letter and one number</mat-hint>
+      <mat-error *ngIf="!formGroup.controls['password'].valid && formGroup.controls['password'].touched">
+        {{ getErrorPassword() }}
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field class="form-element">
+      <input matInput type="password" placeholder="Confirm Password" formControlName="confirmPassword">
+      <mat-hint>Choose a password of at least eight characters, one uppercase letter and one number</mat-hint>
+      <mat-error *ngIf="!formGroup.controls['confirmPassword'].valid && formGroup.controls['confirmPassword'].touched">
+        {{ getErrorConfirmPassword() }}
+      </mat-error>
+    </mat-form-field>
+
+    <div class="form-element">
+      <button mat-raised-button color="primary" type="submit" class="button" [disabled]="!isFormInfoValid">Submit
+        Form</button>
+    </div>
+  </form>
+</div>
+
+<ng-template #forminfo>
+  <div class="container">
+    <div>
+      <i class="fa fa-check" aria-hidden="true" style="color: green;font-size: 30px;"></i> {{ message  }}
+    </div>
+    <a class="nav-link" style="cursor: pointer;" (click)="navigateToPath()">Login</a>
+  </div>
+</ng-template>
