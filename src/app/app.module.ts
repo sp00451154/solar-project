@@ -1,3 +1,4 @@
+
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { MaterialModule } from './material.module';
@@ -14,7 +15,9 @@ import { AuthService } from './services/auth.service';
 import { SignupComponent } from './signup/signup.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { CommonService } from './services/common.service';
+import { ManipulateComponent } from './admin/delete-profile/manipulate.component';
 import {HttpClientModule, HTTP_INTERCEPTORS, HttpClientXsrfModule} from "@angular/common/http";
+import { FormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
@@ -25,8 +28,10 @@ import {HttpClientModule, HTTP_INTERCEPTORS, HttpClientXsrfModule} from "@angula
     LoginComponent,
     UserDirective,
     UserRoleDirective,
-    SignupComponent
+    SignupComponent,
+    ManipulateComponent,
   ],
+  entryComponents: [ManipulateComponent],
   imports: [
     BrowserModule,
     AppRoutingModule,
@@ -35,10 +40,12 @@ import {HttpClientModule, HTTP_INTERCEPTORS, HttpClientXsrfModule} from "@angula
     ReactiveFormsModule,
     HttpClientModule,
     HttpClientXsrfModule,
+    FormsModule
   ],
   exports: [
     UserDirective,
-    UserRoleDirective
+    UserRoleDirective,
+    ManipulateComponent,
   ],
   providers: [AuthService, CommonService],
   bootstrap: [AppComponent]

@@ -6,6 +6,7 @@ import { CommonService } from '../services/common.service';
 import { map, takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 import { Router } from '@angular/router';
+import * as moment from 'moment-timezone';
 
 @Component({
   selector: 'app-signup',
@@ -19,6 +20,12 @@ export class SignupComponent implements OnInit {
   titleAlert: string = 'This field is required';
   post: any = '';
   message: any = '';
+  response: boolean;
+  roles = [
+    {value: 1, viewValue: 'Admin'},
+    {value: 2, viewValue: 'Teacher'},
+    {value: 3, viewValue: 'Student'}
+  ];
 
   constructor(private formBuilder: FormBuilder, private commonService: CommonService, private router: Router,) { }
 
@@ -32,9 +39,11 @@ export class SignupComponent implements OnInit {
     this.formGroup = this.formBuilder.group({
       'email': [null, [Validators.required, Validators.pattern(emailregex)], this.checkInUseEmail],
       'userName': [null, Validators.required],
+      'dob': [null, Validators.required],
+      'role': [null, Validators.required],
       'password': [null, [Validators.required, this.checkPassword]],
       'confirmPassword': [null, [Validators.required, this.checkPassword]],
-      'phone': [null, [Validators.required, Validators.min(1000000000), Validators.maxLength(9999999999)]],
+      'phone': [null, [Validators.required, Validators.min(1000000000), Validators.max(9999999999)]],
       'validate': ''
     });
   }
@@ -95,6 +104,8 @@ export class SignupComponent implements OnInit {
       this.formGroup.controls.userName.valid &&
       this.formGroup.controls.password.valid &&
       this.formGroup.controls.confirmPassword.valid &&
+      this.formGroup.controls.dob.valid &&
+      this.formGroup.controls.role.valid &&
       this.formGroup.controls.password.value === this.formGroup.controls.confirmPassword.value
     );
   }
@@ -103,9 +114,11 @@ export class SignupComponent implements OnInit {
   // }
   onSubmit(post) {
     const payLoad = post;
+    payLoad.dob = this.convertDate(payLoad.dob, 'FromDate');
     delete payLoad.validate;
     this.commonService.register(`register`, payLoad).subscribe(res => {
-      if (res.success) {
+      if (res.body.success) {
+        this.response = true;
         this.formGroup.reset();
         this.message = 'Profile created successfully!';
       }
@@ -115,6 +128,25 @@ export class SignupComponent implements OnInit {
         this.message = err.error.message;
       }
     });
+  }
+  convertDate(d, type) {
+    d = new Date(Date.parse(d));
+    const currentTime = new Date(d);
+    d = moment(currentTime).tz('MST7MDT').format("YYYY-MM-DD HH:mm:ss");
+    if (!d) {
+      return;
+    }
+    const format = 'YYYY-MM-DD';
+    d = d.split('-');
+    const date = `${d[0]}-${d[1]}-${d[2].substring(0, 2)}`;
+    let formattedDate = '';
+    if (type === 'ToDate') {
+      formattedDate = moment(date).add(0, 'day').endOf('day').format(format).toString();
+    } else if (type === 'FromDate') {
+      formattedDate = moment(date).startOf('day').format(format).toString();
+    }
+    // console.log('formattedDate++++', formattedDate);
+    return formattedDate;
   }
   navigateToPath() {
     this.router.navigate(['/login']);

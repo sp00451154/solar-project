@@ -51,8 +51,8 @@ export class CommonService {
       catchError(this.errorHandler)
     );
   }
-  updateAProfile(path: string): Observable<any> {
-    return this.http.get(`${environment.apiUrl}/${path}`, this.httpOptions)
+  updateAProfile(path: string, data: {}): Observable<any> {
+    return this.http.post(`${environment.apiUrl}/${path}`, data, this.httpOptions)
     .pipe(
       catchError(this.errorHandler)
     );

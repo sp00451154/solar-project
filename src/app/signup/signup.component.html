@@ -1,5 +1,4 @@
-
-<div class="container" *ngIf="!message; else forminfo" novalidate>
+<div class="container" *ngIf="!response;" novalidate>
   <form [formGroup]="formGroup" (ngSubmit)="onSubmit(formGroup.value)" class="form">
 
     <mat-form-field class="form-element">
@@ -17,11 +16,29 @@
     </mat-form-field>
 
     <mat-form-field class="form-element">
-      <textarea matInput placeholder="Phone" 
-        formControlName="phone"></textarea>
-      <mat-error *ngIf="!formGroup.controls['phone'].valid && !formGroup.controls['phone'].min && formGroup.controls['phone'].touched">
-        Required field, must be  10 characters.
+      <input matInput type="number" placeholder="Phone" formControlName="phone">
+      <mat-error
+        *ngIf="!formGroup.controls['phone'].valid && !formGroup.controls['phone'].min && formGroup.controls['phone'].touched">
+        Required field, must be 10 characters.
       </mat-error>
+    </mat-form-field>
+
+    <mat-form-field class="form-element">
+      <input matInput placeholder="Date of Birth" formControlName="dob" [matDatepicker]="picker">
+      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-datepicker #picker></mat-datepicker>
+      <mat-error *ngIf="!formGroup.controls['dob'].valid && formGroup.controls['dob'].touched">
+        Please choose a date
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field class="form-element" appearance="fill">
+      <mat-label>Choose a Role</mat-label>
+      <mat-select formControlName="role">
+        <mat-option *ngFor="let role of roles"  [value]="role.value">
+          {{role.viewValue}}
+        </mat-option>
+      </mat-select>
     </mat-form-field>
 
     <mat-form-field class="form-element">
@@ -47,11 +64,9 @@
   </form>
 </div>
 
-<ng-template #forminfo>
-  <div class="container">
-    <div>
-      <i class="fa fa-check" aria-hidden="true" style="color: green;font-size: 30px;"></i> {{ message  }}
-    </div>
-    <a class="nav-link" style="cursor: pointer;" (click)="navigateToPath()">Login</a>
+<div class="container" *ngIf="message">
+  <div>
+    {{ message  }}
   </div>
-</ng-template>
+  <a *ngIf="response;" class="nav-link" style="cursor: pointer;" (click)="navigateToPath()">Login</a>
+</div>

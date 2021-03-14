@@ -10,7 +10,7 @@ import { CommonService } from '../services/common.service';
 
 export class ProfileComponent implements OnInit {
   Role = Role;
-  displayedColumns: string[] = [ 'userName', 'email', 'id'];
+  displayedColumns: string[] = [ 'USERNAME', 'EMAIL', 'ID', 'PHONE', 'ROLE', 'DOB'];
   dataSource = [];
   // dataSource = ELEMENT_DATA;
 
