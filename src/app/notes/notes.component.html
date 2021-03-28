@@ -1,0 +1,74 @@
+<div class="container" *ngIf="!response;" novalidate>
+  <form [formGroup]="formGroup" (ngSubmit)="onSubmit(formGroup.value)" class="form">
+    <div class="container" *ngIf="message">
+      <div>
+        {{ message  }}
+      </div>
+    </div>
+    <mat-form-field class="topics-chip-list">
+      <mat-label>Enter Topics</mat-label>
+      <mat-chip-list #topicList aria-label="Notes selection">
+        <mat-chip *ngFor="let note of topics" [selectable]="selectable"
+                 [removable]="removable" (removed)="removeTopics(note)">
+          {{note.name}}
+          <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
+        </mat-chip>
+        <input placeholder="Type topic & Press enter"
+               formControlName="topics"
+               [matChipInputFor]="topicList"
+               [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+               [matChipInputAddOnBlur]="addOnBlur"
+               (matChipInputTokenEnd)="addTopics($event)">
+      </mat-chip-list>
+    </mat-form-field>
+
+    <mat-form-field class="form-element" appearance="fill">
+      <mat-label>Choose a topic</mat-label>
+      <mat-select formControlName="topic">
+        <mat-option *ngFor="let role of roles"  [value]="role.value">
+          {{role.viewValue}}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>Enter a Question</mat-label>
+      <textarea matInput rows="5"  placeholder="Enter a Question" formControlName="question"></textarea>
+  </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>Enter Answer</mat-label>
+      <textarea matInput rows="5"  placeholder="Enter a Question" formControlName="answer"></textarea>
+  </mat-form-field>
+
+  <mat-form-field class="topics-chip-list">
+    <mat-label>Enter Links</mat-label>
+    <mat-chip-list #linkList aria-label="Link selection">
+      <mat-chip *ngFor="let link of links" [selectable]="selectable"
+               [removable]="removable" (removed)="removeLinks(link)">
+        {{link.name}}
+        <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
+      </mat-chip>
+      <input placeholder="Type link & Press enter"
+             formControlName="links"
+             [matChipInputFor]="linkList"
+             [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+             [matChipInputAddOnBlur]="addOnBlur"
+             (matChipInputTokenEnd)="addLinks($event)">
+    </mat-chip-list>
+  </mat-form-field>
+
+
+
+    <div class="form-element">
+      <button mat-raised-button color="primary" type="submit" class="button" [disabled]="!isFormInfoValid">Add
+        Note</button>
+    </div>
+  </form>
+</div>
+
+<div class="container" *ngIf="message">
+  <div>
+    {{ message  }}
+  </div>
+</div>

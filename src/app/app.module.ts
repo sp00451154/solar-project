@@ -1,4 +1,3 @@
-
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { MaterialModule } from './material.module';
@@ -13,6 +12,7 @@ import { UserRoleDirective } from './directives/user-role.directive';
 import { UserDirective } from './directives/user.directive';
 import { AuthService } from './services/auth.service';
 import { SignupComponent } from './signup/signup.component';
+import { NotesComponent } from './notes/notes.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { CommonService } from './services/common.service';
 import { ManipulateComponent } from './admin/delete-profile/manipulate.component';
@@ -29,6 +29,7 @@ import { FormsModule } from '@angular/forms';
     UserDirective,
     UserRoleDirective,
     SignupComponent,
+    NotesComponent,
     ManipulateComponent,
   ],
   entryComponents: [ManipulateComponent],

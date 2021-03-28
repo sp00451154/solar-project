@@ -8,6 +8,7 @@ import { AuthService } from './services/auth.service';
 import { CommonService } from './services/common.service';
 import { LoginComponent } from './login/login.component';
 import { SignupComponent } from './signup/signup.component';
+import { NotesComponent } from './notes/notes.component';
 import { Role } from './models/role';
 
 
@@ -29,6 +30,10 @@ const routes: Routes = [
       {
         path: 'login',
         component: LoginComponent
+      },
+      {
+        path: 'notes',
+        component: NotesComponent
       },
       {
         path: 'signUp',

@@ -57,6 +57,18 @@ export class CommonService {
       catchError(this.errorHandler)
     );
   }
+  createANote(path: string, data: {}): Observable<any> {
+    return this.http.post(`${environment.apiUrl}/${path}`, data, this.httpOptions)
+    .pipe(
+      catchError(this.errorHandler)
+    );
+  }
+  uploadTopics(path: string, data: {}): Observable<any> {
+    return this.http.post(`${environment.apiUrl}/${path}`, data, this.httpOptions)
+    .pipe(
+      catchError(this.errorHandler)
+    );
+  }
 
 
 
