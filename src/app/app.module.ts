@@ -18,6 +18,7 @@ import { CommonService } from './services/common.service';
 import { ManipulateComponent } from './admin/delete-profile/manipulate.component';
 import {HttpClientModule, HTTP_INTERCEPTORS, HttpClientXsrfModule} from "@angular/common/http";
 import { FormsModule } from '@angular/forms';
+import { ExpansesComponent } from './expanses/expanses.component';
 
 @NgModule({
   declarations: [
@@ -30,6 +31,7 @@ import { FormsModule } from '@angular/forms';
     UserRoleDirective,
     SignupComponent,
     NotesComponent,
+    ExpansesComponent,
     ManipulateComponent,
   ],
   entryComponents: [ManipulateComponent],

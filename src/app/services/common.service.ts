@@ -69,6 +69,18 @@ export class CommonService {
       catchError(this.errorHandler)
     );
   }
+  addExpanseDetails(path: string, data: {}): Observable<any> {
+    return this.http.post(`${environment.apiUrl}/${path}`, data, this.httpOptions)
+    .pipe(
+      catchError(this.errorHandler)
+    );
+  }
+  getExpanses(path: string, data: {}): Observable<any> {
+    return this.http.post(`${environment.apiUrl}/${path}`, data, this.httpOptions)
+    .pipe(
+      catchError(this.errorHandler)
+    );
+  }
 
 
 

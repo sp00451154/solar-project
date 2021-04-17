@@ -10,6 +10,7 @@ import { LoginComponent } from './login/login.component';
 import { SignupComponent } from './signup/signup.component';
 import { NotesComponent } from './notes/notes.component';
 import { Role } from './models/role';
+import { ExpansesComponent } from './expanses/expanses.component';
 
 
 const routes: Routes = [
@@ -34,6 +35,10 @@ const routes: Routes = [
       {
         path: 'notes',
         component: NotesComponent
+      },
+      {
+        path: 'expanses',
+        component: ExpansesComponent
       },
       {
         path: 'signUp',

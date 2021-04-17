@@ -15,17 +15,20 @@
       </li>
 
       <!-- Anonymous only -->
-      <li class="nav-item" *ngIf="!isAuthorized">
-        <a class="nav-link" [routerLink]="['login']">Login</a>
-      </li>
-
-      <!-- Anonymous only -->
       <li class="nav-item" >
         <a class="nav-link" [routerLink]="['notes']">Notes</a>
       </li>
       <!-- Anonymous only -->
       <li class="nav-item" >
+        <a class="nav-link" [routerLink]="['expanses']">Expanses</a>
+      </li>
+      <!-- Anonymous only -->
+      <li class="nav-item" >
         <a class="nav-link" [routerLink]="['signUp']">SignUp</a>
+      </li>
+       <!-- Anonymous only -->
+       <li class="nav-item" *ngIf="!isAuthorized">
+        <a class="nav-link" [routerLink]="['login']">Login</a>
       </li>
 
       <!-- Authorized only -->

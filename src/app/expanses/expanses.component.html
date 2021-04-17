@@ -1,0 +1,104 @@
+<div class="container" *ngIf="!response;" novalidate>
+  <form [formGroup]="formGroup" (ngSubmit)="onSubmit(formGroup.value)" class="form">
+    <div class="container" *ngIf="message">
+      <div>
+        {{ message  }}
+      </div>
+    </div>
+    <mat-form-field class="topics-chip-list">
+      <mat-label>Add roommates</mat-label>
+      <mat-chip-list #topicList aria-label="Notes selection">
+        <mat-chip *ngFor="let name of names" [selectable]="selectable"
+                 [removable]="removable" (removed)="removeTopics(name)">
+          {{name.name}}
+          <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
+        </mat-chip>
+        <input placeholder="Type name & Press enter"
+               formControlName="names"
+               [matChipInputFor]="topicList"
+               [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+               [matChipInputAddOnBlur]="addOnBlur"
+               (matChipInputTokenEnd)="addTopics($event)">
+      </mat-chip-list>
+    </mat-form-field>
+
+    <mat-form-field class="form-element" appearance="fill">
+      <mat-label>Choose who spent</mat-label>
+      <mat-select formControlName="expanseSpentBy">
+        <mat-option *ngFor="let name of nameChips"  [value]="name.value">
+          {{name.viewValue}}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field class="topics-chip-list">
+    <mat-vertical-stepper [linear]="isLinear" #stepper>
+      <mat-step [stepControl]="expanseNameFormGroup">
+        <form [formGroup]="expanseNameFormGroup">
+          <ng-template matStepLabel>Expanse name</ng-template>
+          <mat-form-field>
+            <input matInput placeholder="Expanse on what ?" formControlName="expanseName" required>
+          </mat-form-field>
+          <div>
+            <button mat-button matStepperNext>Next</button>
+          </div>
+        </form>
+      </mat-step>
+      <mat-step [stepControl]="expanseAmountFormGroup">
+        <form [formGroup]="expanseAmountFormGroup">
+          <ng-template matStepLabel>Expanse amount</ng-template>
+          <mat-form-field>
+            <mat-label>Amount</mat-label>
+            <input matInput formControlName="expanseAmount" placeholder="Amount on expanse ?"
+                   required>
+          </mat-form-field>
+          <div>
+            <button mat-button matStepperPrevious>Back</button>
+            <button mat-button matStepperNext (click)="addExpanse()">Add</button>
+          </div>
+        </form>
+      </mat-step>
+      <mat-step>
+        <ng-template matStepLabel>Done</ng-template>
+        <p>Expanse has been added successfully.</p>
+        <div>
+          <button mat-button matStepperPrevious>Back</button>
+          <button mat-button (click)="stepper.reset()">Reset</button>
+        </div>
+      </mat-step>
+    </mat-vertical-stepper>
+    </mat-form-field>
+
+    
+
+  <mat-form-field class="topics-chip-list">
+    <mat-label>Common Expanses</mat-label>
+    <mat-chip-list #linkList aria-label="Link selection">
+      <mat-chip *ngFor="let e of commonExpanses" [selectable]="selectable"
+               [removable]="removable" (removed)="removeLinks(e)">
+        {{e.name}}
+        <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
+      </mat-chip>
+      <input placeholder="Type Expanses & Press enter"
+             formControlName="commonExpanses"
+             [matChipInputFor]="linkList"
+             [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+             [matChipInputAddOnBlur]="addOnBlur"
+             (matChipInputTokenEnd)="addLinks($event)">
+    </mat-chip-list>
+  </mat-form-field>
+
+
+
+    <div class="form-element">
+      <button mat-raised-button color="primary" type="submit" class="button" [disabled]="!isFormInfoValid">Add
+        Note</button>
+    </div>
+  </form>
+</div>
+
+<div class="container" *ngIf="message">
+  <div>
+    {{ message  }}
+  </div>
+</div>

@@ -134,6 +134,8 @@ export class NotesComponent implements OnInit {
     };
     this.commonService.uploadTopics(`uploadTopics`, payLoad).subscribe(res => {
       if (res.body.successID) {
+        // {value: 'JAVASCRIPT', viewValue: 'JAVASCRIPT'},
+        this.roles = this.topics.map(e => ({value : e.name, viewValue : e.name}));
         this.message = `${this.topics[this.topics.length - 1 ].name.toUpperCase()} has been added to the list.`;
       }
     }, (err) => {
@@ -184,6 +186,7 @@ export class NotesComponent implements OnInit {
 
     if (index >= 0) {
       this.topics.splice(index, 1);
+      this.roles = this.topics.map(e => ({value : e.name, viewValue : e.name}));
     }
   }
   addLinks(event: MatChipInputEvent): void {
