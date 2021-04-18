@@ -69,15 +69,26 @@
     </mat-vertical-stepper>
     </mat-form-field>
 
-    
+    <!-- <div class="row">
+      <mat-form-field>
+        <mat-label>Fixed Expanse Name</mat-label>
+        <input matInput value="Rent" #message>
+      </mat-form-field>
+      
+      <mat-form-field>
+        <mat-label>Amount</mat-label>
+        <input matInput value="0" #action>
+      </mat-form-field>
+      <button mat-stroked-button (click)="openSnackBar(message.value, action.value)">Add</button>
+    </div>
+     -->
 
   <mat-form-field class="topics-chip-list">
     <mat-label>Common Expanses</mat-label>
     <mat-chip-list #linkList aria-label="Link selection">
       <mat-chip *ngFor="let e of commonExpanses" [selectable]="selectable"
-               [removable]="removable" (removed)="removeLinks(e)">
-        {{e.name}}
-        <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
+               [removable]="removable" >
+            <span (click)="openDialog('Add',e)">{{e.name}}</span>
       </mat-chip>
       <input placeholder="Type Expanses & Press enter"
              formControlName="commonExpanses"
@@ -87,7 +98,7 @@
              (matChipInputTokenEnd)="addLinks($event)">
     </mat-chip-list>
   </mat-form-field>
-
+<!-- id Column -->
 
 
     <div class="form-element">

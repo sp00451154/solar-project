@@ -9,6 +9,11 @@ import { Router } from '@angular/router';
 import * as moment from 'moment-timezone';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { MatChipInputEvent } from '@angular/material/chips';
+import {MatSnackBar} from '@angular/material/snack-bar';
+import { MatDialog } from '@angular/material/dialog';
+import { ManipulateComponent } from './../admin/delete-profile/manipulate.component';
+
+
 
 
 @Component({
@@ -35,10 +40,9 @@ export class ExpansesComponent implements OnInit {
   addOnBlur = true;
   readonly separatorKeysCodes: number[] = [ENTER, COMMA];
   commonExpanses: any = [
-    { name: 'Electricity' },
-    { name: 'Rent' },
-    { name: 'Cook' },
-    { name: 'Maintenance' },
+    { name: 'Rent', amount: 0 },
+    { name: 'Cook', amount: 0 },
+    { name: 'Mausi', amount: 0 },
   ];
   names: any = [
     { name: 'SIBA' },
@@ -53,7 +57,9 @@ export class ExpansesComponent implements OnInit {
   individualExpanseSpent: any;
   totalAmountSpent: any;
   perHeadAmountSpent: number;
-  constructor(private formBuilder: FormBuilder, private commonService: CommonService, private router: Router,) { }
+  constructor(private formBuilder: FormBuilder, private commonService: CommonService,
+              private router: Router, private snackBar: MatSnackBar,
+              public matDialog: MatDialog) { }
 
   ngOnInit() {
     this.createForm();
@@ -263,6 +269,30 @@ export class ExpansesComponent implements OnInit {
   }
   navigateToPath() {
     this.router.navigate(['/login']);
+  }
+  openSnackBar(message: string, action: string) {
+    this.snackBar.open(message, action, {
+      duration: 2000,
+    });
+  }
+  openDialog(action, obj) {
+    obj.action = action;
+    const dialogRef = this.matDialog.open(ManipulateComponent, {
+      width: '250px',
+      data: obj
+    });
+    dialogRef.afterClosed().subscribe(result => {
+      if (result.event === 'Add') {
+        // commonExpanses
+        console.log('>>>>>>>result', result);
+        this.commonExpanses = this.commonExpanses.map(e => {
+          if (e.name === result.data.name) {
+            e.amount = result.data.amount;
+          }
+          return e;
+        });
+      }
+    });
   }
 
 }
