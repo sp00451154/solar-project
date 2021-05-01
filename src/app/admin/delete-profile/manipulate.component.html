@@ -1,5 +1,4 @@
-<!-- dialog-box.component.html -->
-<h1 mat-dialog-title><strong>{{action}}ing</strong></h1>
+<!-- <h1 mat-dialog-title><strong>{{action}}ing</strong></h1> -->
 <div *ngIf="action == 'Update' ">
   <div mat-dialog-content>
     <mat-form-field>
@@ -23,6 +22,37 @@
     <button mat-button (click)="closeDialog()" mat-flat-button color="warn">Cancel</button>
   </div>
 </div>
+<div *ngIf="action == 'UpdateExpanse1' ">
+  <div mat-dialog-content>
+    <mat-form-field>
+      <input disabled placeholder="Name" matInput [(ngModel)]="local_data.name">
+    </mat-form-field>
+    <mat-form-field>
+      <input placeholder="Update Expanse" matInput [(ngModel)]="local_data.spentOn">
+    </mat-form-field>
+    <mat-form-field>
+      <input placeholder="Update Amount" matInput [(ngModel)]="local_data.spentAmount">
+    </mat-form-field>
+  </div>
+  <div mat-dialog-actions>
+    <button mat-button (click)="doAction()">Update</button>
+    <button mat-button (click)="closeDialog()" mat-flat-button color="warn">Cancel</button>
+  </div>
+</div>
+<div *ngIf="action == 'updateACommonExpanse' ">
+  <div mat-dialog-content>
+    <mat-form-field>
+      <input disabled placeholder="Name" matInput [(ngModel)]="local_data.expanseName">
+    </mat-form-field>
+    <mat-form-field>
+      <input placeholder="Update Amount" matInput [(ngModel)]="local_data.expanseAmount">
+    </mat-form-field>
+  </div>
+  <div mat-dialog-actions>
+    <button mat-button (click)="doAction()">Update</button>
+    <button mat-button (click)="closeDialog()" mat-flat-button color="warn">Cancel</button>
+  </div>
+</div>
 <div *ngIf="action == 'Delete' ">
   <div mat-dialog-content>
     Sure to delete ?
@@ -32,9 +62,18 @@
     <button mat-button (click)="closeDialog()" mat-flat-button color="warn">Cancel</button>
   </div>
 </div>
-<div *ngIf="action == 'Add' ">
+<div *ngIf="action == 'DeleteCommonExpanse' ">
+  <div mat-dialog-content>
+    Sure to delete ?
+  </div>
+  <div mat-dialog-actions>
+    <button mat-button (click)="doAction()">Delete</button>
+    <button mat-button (click)="closeDialog()" mat-flat-button color="warn">Cancel</button>
+  </div>
+</div>
+<div *ngIf="action == 'AddACommonExpanse' ">
   <mat-form-field>
-    <input placeholder="{{action}} Amount for {{local_data.name}}" matInput [(ngModel)]="local_data.amount">
+    <input placeholder="Add Amount for {{local_data.name}}" matInput [(ngModel)]="local_data.amount">
   </mat-form-field>
   <div mat-dialog-actions>
     <button mat-button (click)="doAction()">Add</button>

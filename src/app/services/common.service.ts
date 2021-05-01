@@ -81,6 +81,48 @@ export class CommonService {
       catchError(this.errorHandler)
     );
   }
+  getAllExpanses(path: string): Observable<any> {
+    return this.http.get(`${environment.apiUrl}/${path}`, this.httpOptions)
+    .pipe(
+      catchError(this.errorHandler)
+    );
+  }
+  UpdateAExpanses(path: string, data: {}): Observable<any> {
+    return this.http.post(`${environment.apiUrl}/${path}`, data, this.httpOptions)
+    .pipe(
+      catchError(this.errorHandler)
+    );
+  }
+  deleteAExpanses(path: string, data: {}): Observable<any> {
+    return this.http.post(`${environment.apiUrl}/${path}`, data, this.httpOptions)
+    .pipe(
+      catchError(this.errorHandler)
+    );
+  }
+  uploadACommonExpanse(path: string, data: {}): Observable<any> {
+    return this.http.post(`${environment.apiUrl}/${path}`, data, this.httpOptions)
+    .pipe(
+      catchError(this.errorHandler)
+    );
+  }
+  getAllCommonExpanses(path: string): Observable<any> {
+    return this.http.get(`${environment.apiUrl}/${path}`, this.httpOptions)
+    .pipe(
+      catchError(this.errorHandler)
+    );
+  }
+  deleteACommonExpanse(path: string, data: {}): Observable<any> {
+    return this.http.post(`${environment.apiUrl}/${path}`, data, this.httpOptions)
+    .pipe(
+      catchError(this.errorHandler)
+    );
+  }
+  UpdateACommonExpanse(path: string, data: {}): Observable<any> {
+    return this.http.post(`${environment.apiUrl}/${path}`, data, this.httpOptions)
+    .pipe(
+      catchError(this.errorHandler)
+    );
+  }
 
 
 

@@ -1,115 +1,236 @@
 <div class="container" *ngIf="!response;" novalidate>
-  <form [formGroup]="formGroup" (ngSubmit)="onSubmit(formGroup.value)" class="form">
-    <div class="container" *ngIf="message">
+  <div class="row">
+    <div class="col-md-6">
+      <form [formGroup]="formGroup" (ngSubmit)="onSubmit(formGroup.value)" class="form">
+        <div class="container" *ngIf="message">
+          <div>
+            {{ message }}
+          </div>
+        </div>
+        <mat-form-field class="topics-chip-list">
+          <mat-label>Add roommates</mat-label>
+          <mat-chip-list #topicList aria-label="Notes selection">
+            <mat-chip *ngFor="let name of names" [selectable]="selectable" [removable]="removable"
+              (removed)="removeTopics(name)">
+              {{name.name}}
+              <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
+            </mat-chip>
+            <input placeholder="Type name & Press enter" formControlName="names" [matChipInputFor]="topicList"
+              [matChipInputSeparatorKeyCodes]="separatorKeysCodes" [matChipInputAddOnBlur]="addOnBlur"
+              (matChipInputTokenEnd)="addTopics($event)">
+          </mat-chip-list>
+        </mat-form-field>
+
+        <mat-form-field class="form-element" appearance="fill">
+          <mat-label>Choose who spent</mat-label>
+          <mat-select formControlName="expanseSpentBy">
+            <mat-option *ngFor="let name of nameChips" [value]="name.value">
+              {{name.viewValue}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field class="topics-chip-list">
+          <mat-vertical-stepper [linear]="isLinear" #stepper>
+            <mat-step [stepControl]="expanseNameFormGroup">
+              <form [formGroup]="expanseNameFormGroup">
+                <ng-template matStepLabel>Expanse name</ng-template>
+                <mat-form-field>
+                  <input matInput placeholder="Expanse on what ?" formControlName="expanseName" required>
+                </mat-form-field>
+                <div>
+                  <button mat-button matStepperNext>Next</button>
+                </div>
+              </form>
+            </mat-step>
+            <mat-step [stepControl]="expanseAmountFormGroup">
+              <form [formGroup]="expanseAmountFormGroup">
+                <ng-template matStepLabel>Expanse amount</ng-template>
+                <mat-form-field>
+                  <mat-label>Amount</mat-label>
+                  <input matInput formControlName="expanseAmount" placeholder="Amount on expanse ?" required>
+                </mat-form-field>
+                <div>
+                  <button mat-button matStepperPrevious>Back</button>
+                  <button mat-button matStepperNext (click)="addExpanse()">Add</button>
+                </div>
+              </form>
+            </mat-step>
+            <mat-step>
+              <ng-template matStepLabel>Done</ng-template>
+              <p>Expanse has been added successfully.</p>
+              <div>
+                <button mat-button matStepperPrevious>Back</button>
+                <button mat-button (click)="stepper.reset()">Reset</button>
+              </div>
+            </mat-step>
+          </mat-vertical-stepper>
+        </mat-form-field>
+
+        <mat-form-field class="topics-chip-list">
+          <mat-label>Common Expanses</mat-label>
+          <mat-chip-list #linkList aria-label="Link selection">
+            <mat-chip *ngFor="let e of commonExpanses" [selectable]="selectable" [removable]="removable">
+              <span (click)="openDialog('AddACommonExpanse',e)">{{e.name}}</span>
+            </mat-chip>
+            <input placeholder="Type Expanses & Press enter" formControlName="commonExpanses"
+              [matChipInputFor]="linkList" [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+              [matChipInputAddOnBlur]="addOnBlur" (matChipInputTokenEnd)="addLinks($event)">
+          </mat-chip-list>
+        </mat-form-field>
+        <div class="form-element">
+          <button mat-raised-button color="primary" type="submit" class="button" [disabled]="!isFormInfoValid">Add
+            Note</button>
+        </div>
+      </form>
+    </div>
+    <div class="col-md-6">
       <div>
-        {{ message  }}
+        <mat-form-field>
+          <mat-label>Filter Daily Expanse</mat-label>
+          <input matInput (keyup)="applyFilter_one($event)" placeholder="Ex. Name" #input>
+        </mat-form-field>
+
+        <div class="mat-elevation-z8">
+          <table mat-table [dataSource]="dataSource_one" matSort>
+            <!-- ID Column -->
+            <ng-container matColumnDef="id">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header> ID </th>
+              <td mat-cell *matCellDef="let row"> {{row.id}} </td>
+            </ng-container>
+
+            <!-- Progress Column -->
+            <ng-container matColumnDef="spentOn">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header> Expanse </th>
+              <td mat-cell *matCellDef="let row"> {{row.spentOn}} </td>
+            </ng-container>
+
+            <!-- Name Column -->
+            <ng-container matColumnDef="name">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header> Name </th>
+              <td mat-cell *matCellDef="let row"> {{row.name}} </td>
+            </ng-container>
+
+            <!-- Color Column -->
+            <ng-container matColumnDef="spentAmount">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header> Amount </th>
+              <td mat-cell *matCellDef="let row" > {{row.spentAmount}} </td>
+            </ng-container>
+
+            <ng-container matColumnDef="action">
+              <th mat-header-cell *matHeaderCellDef> ACTION </th>
+              <td mat-cell *matCellDef="let row"> 
+                <a (click)="openDialog('UpdateExpanse1',row)" class="p-right"><i class="fa fa-edit" style="color: seagreen;font-size: x-large;"></i></a>
+                <a (click)="openDialog('Delete',row)" class="p-right"><i class="fa fa-trash" style="color: red;font-size: x-large;"></i></a>
+              </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns_one"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns_one;"></tr>
+
+            <!-- Row shown when there is no matching data. -->
+            <tr class="mat-row" *matNoDataRow>
+              <td class="mat-cell" colspan="4">No data matching the filter "{{input.value}}"</td>
+            </tr>
+          </table>
+          <mat-paginator [pageSizeOptions]="[ 5, 10, 25, 100]"></mat-paginator>
+        </div>
+      </div>
+      <div>
+        <mat-form-field>
+          <mat-label>Filter Common Expanse</mat-label>
+          <input matInput (keyup)="applyFilter_two($event)" placeholder="Ex. Name" #input>
+        </mat-form-field>
+
+        <div class="mat-elevation-z8">
+          <table mat-table [dataSource]="dataSource_two" matSort>
+            <!-- ID Column -->
+            <ng-container matColumnDef="id">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header> ID </th>
+              <td mat-cell *matCellDef="let row"> {{row.id}} </td>
+            </ng-container>
+
+
+            <!-- Name Column -->
+            <ng-container matColumnDef="expanseName">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header> Name </th>
+              <td mat-cell *matCellDef="let row"> {{row.expanseName}} </td>
+            </ng-container>
+
+            <!-- Color Column -->
+            <ng-container matColumnDef="expanseAmount">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header> Amount </th>
+              <td mat-cell *matCellDef="let row" > {{row.expanseAmount}} </td>
+            </ng-container>
+
+            <ng-container matColumnDef="action">
+              <th mat-header-cell *matHeaderCellDef> ACTION </th>
+              <td mat-cell *matCellDef="let element"> 
+                <a (click)="openDialog('updateACommonExpanse',element,element.id)" style="padding-right: 35px;cursor: pointer;"><i class="fa fa-edit" style="color: seagreen;font-size: x-large;"></i></a>
+                <a (click)="openDialog('DeleteCommonExpanse',element,element.id)" style="cursor: pointer"><i class="fa fa-trash" style="color: red;font-size: x-large;"></i></a>
+              </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns_two"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns_two;"></tr>
+
+            <!-- Row shown when there is no matching data. -->
+            <tr class="mat-row" *matNoDataRow>
+              <td class="mat-cell" colspan="4">No data matching the filter "{{input.value}}"</td>
+            </tr>
+          </table>
+          <!-- <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator> -->
+        </div>
+      </div>
+      <div>
+        <mat-form-field>
+          <mat-label>Filter</mat-label>
+          <input matInput (keyup)="applyFilter_three($event)" placeholder="Ex. Name" #input>
+        </mat-form-field>
+
+        <div class="mat-elevation-z8">
+          <table mat-table [dataSource]="dataSource_three" matSort>
+            <!-- ID Column -->
+            <ng-container matColumnDef="id">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header> ID </th>
+              <td mat-cell *matCellDef="let row"> {{row.id}} </td>
+            </ng-container>
+
+            <!-- Progress Column -->
+            <ng-container matColumnDef="expanse">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header> Progress </th>
+              <td mat-cell *matCellDef="let row"> {{row.expanse}}% </td>
+            </ng-container>
+
+            <!-- Name Column -->
+            <ng-container matColumnDef="name">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header> Name </th>
+              <td mat-cell *matCellDef="let row"> {{row.name}} </td>
+            </ng-container>
+
+            <!-- Color Column -->
+            <ng-container matColumnDef="color">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header> Color </th>
+              <td mat-cell *matCellDef="let row" > {{row.color}} </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns_three"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns_three;"></tr>
+
+            <!-- Row shown when there is no matching data. -->
+            <tr class="mat-row" *matNoDataRow>
+              <td class="mat-cell" colspan="4">No data matching the filter "{{input.value}}"</td>
+            </tr>
+          </table>
+          <!-- <mat-paginator [pageSizeOptions]="[2, 5, 10, 25, 100]"></mat-paginator> -->
+        </div>
       </div>
     </div>
-    <mat-form-field class="topics-chip-list">
-      <mat-label>Add roommates</mat-label>
-      <mat-chip-list #topicList aria-label="Notes selection">
-        <mat-chip *ngFor="let name of names" [selectable]="selectable"
-                 [removable]="removable" (removed)="removeTopics(name)">
-          {{name.name}}
-          <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
-        </mat-chip>
-        <input placeholder="Type name & Press enter"
-               formControlName="names"
-               [matChipInputFor]="topicList"
-               [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-               [matChipInputAddOnBlur]="addOnBlur"
-               (matChipInputTokenEnd)="addTopics($event)">
-      </mat-chip-list>
-    </mat-form-field>
-
-    <mat-form-field class="form-element" appearance="fill">
-      <mat-label>Choose who spent</mat-label>
-      <mat-select formControlName="expanseSpentBy">
-        <mat-option *ngFor="let name of nameChips"  [value]="name.value">
-          {{name.viewValue}}
-        </mat-option>
-      </mat-select>
-    </mat-form-field>
-
-    <mat-form-field class="topics-chip-list">
-    <mat-vertical-stepper [linear]="isLinear" #stepper>
-      <mat-step [stepControl]="expanseNameFormGroup">
-        <form [formGroup]="expanseNameFormGroup">
-          <ng-template matStepLabel>Expanse name</ng-template>
-          <mat-form-field>
-            <input matInput placeholder="Expanse on what ?" formControlName="expanseName" required>
-          </mat-form-field>
-          <div>
-            <button mat-button matStepperNext>Next</button>
-          </div>
-        </form>
-      </mat-step>
-      <mat-step [stepControl]="expanseAmountFormGroup">
-        <form [formGroup]="expanseAmountFormGroup">
-          <ng-template matStepLabel>Expanse amount</ng-template>
-          <mat-form-field>
-            <mat-label>Amount</mat-label>
-            <input matInput formControlName="expanseAmount" placeholder="Amount on expanse ?"
-                   required>
-          </mat-form-field>
-          <div>
-            <button mat-button matStepperPrevious>Back</button>
-            <button mat-button matStepperNext (click)="addExpanse()">Add</button>
-          </div>
-        </form>
-      </mat-step>
-      <mat-step>
-        <ng-template matStepLabel>Done</ng-template>
-        <p>Expanse has been added successfully.</p>
-        <div>
-          <button mat-button matStepperPrevious>Back</button>
-          <button mat-button (click)="stepper.reset()">Reset</button>
-        </div>
-      </mat-step>
-    </mat-vertical-stepper>
-    </mat-form-field>
-
-    <!-- <div class="row">
-      <mat-form-field>
-        <mat-label>Fixed Expanse Name</mat-label>
-        <input matInput value="Rent" #message>
-      </mat-form-field>
-      
-      <mat-form-field>
-        <mat-label>Amount</mat-label>
-        <input matInput value="0" #action>
-      </mat-form-field>
-      <button mat-stroked-button (click)="openSnackBar(message.value, action.value)">Add</button>
-    </div>
-     -->
-
-  <mat-form-field class="topics-chip-list">
-    <mat-label>Common Expanses</mat-label>
-    <mat-chip-list #linkList aria-label="Link selection">
-      <mat-chip *ngFor="let e of commonExpanses" [selectable]="selectable"
-               [removable]="removable" >
-            <span (click)="openDialog('Add',e)">{{e.name}}</span>
-      </mat-chip>
-      <input placeholder="Type Expanses & Press enter"
-             formControlName="commonExpanses"
-             [matChipInputFor]="linkList"
-             [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-             [matChipInputAddOnBlur]="addOnBlur"
-             (matChipInputTokenEnd)="addLinks($event)">
-    </mat-chip-list>
-  </mat-form-field>
-<!-- id Column -->
-
-
-    <div class="form-element">
-      <button mat-raised-button color="primary" type="submit" class="button" [disabled]="!isFormInfoValid">Add
-        Note</button>
-    </div>
-  </form>
+  </div>
 </div>
 
 <div class="container" *ngIf="message">
   <div>
-    {{ message  }}
+    {{ message }}
   </div>
 </div>

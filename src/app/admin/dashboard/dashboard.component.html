@@ -46,8 +46,8 @@
   <ng-container matColumnDef="ACTION">
     <th mat-header-cell *matHeaderCellDef> ACTION </th>
     <td mat-cell *matCellDef="let element"> 
-      <a (click)="openDialog('Update',element,element._id)" style="padding-right: 35px;cursor: pointer;"><i class="fa fa-edit" style="color: seagreen;font-size: x-large;"></i> EDIT</a>
-      <a (click)="openDialog('Delete',element,element._id)"  style="cursor: pointer"><i class="fa fa-trash" style="color: red;font-size: x-large;"></i> DELETE</a>
+      <a (click)="openDialog('Update',element,element._id)" class="p-right"><i class="fa fa-edit" style="color: seagreen;font-size: x-large;"></i> EDIT</a>
+      <a (click)="openDialog('Delete',element,element._id)" class="p-right"><i class="fa fa-trash" style="color: red;font-size: x-large;"></i> DELETE</a>
     </td>
   </ng-container>
 

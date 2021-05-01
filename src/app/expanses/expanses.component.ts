@@ -1,5 +1,5 @@
-import { OnInit } from '@angular/core';
-import { Component } from '@angular/core';
+import { AfterViewInit, OnInit } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, FormControl, Validators } from '@angular/forms';
 import { Observable } from 'rxjs/Observable';
 import { CommonService } from '../services/common.service';
@@ -12,17 +12,50 @@ import { MatChipInputEvent } from '@angular/material/chips';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
 import { ManipulateComponent } from './../admin/delete-profile/manipulate.component';
+import {MatPaginator} from '@angular/material/paginator';
+import {MatSort} from '@angular/material/sort';
+import {MatTableDataSource} from '@angular/material/table';
 
-
-
+export interface Expanse1 {
+  id: string;
+  name: string;
+  spentOn: string;
+  spentAmount: number;
+  action: any;
+}
+export interface Expanse2 {
+  id: string;
+  expanseName: string;
+  expanseAmount: number;
+  action: any;
+}
+export interface Expanse3 {
+  id: string;
+  name: string;
+  expanse: string;
+  color: any;
+}
 
 @Component({
   selector: 'app-expanses',
   templateUrl: './expanses.component.html',
   styleUrls: ['./expanses.component.css']
 })
-export class ExpansesComponent implements OnInit {
+export class ExpansesComponent implements OnInit, AfterViewInit  {
   private destroy$: Subject<void> = new Subject();
+  displayedColumns_one: string[] = ['id', 'name', 'spentOn', 'spentAmount', 'action'];
+  displayedColumns_two: string[] = ['id', 'expanseName', 'expanseAmount', 'action'];
+  displayedColumns_three: string[] = ['id', 'name', 'expanse', 'color'];
+  dataSource_one: MatTableDataSource<Expanse1>;
+  dataSource_two: MatTableDataSource<Expanse2>;
+  dataSource_three: MatTableDataSource<Expanse3>;
+
+  @ViewChild(MatPaginator, { static: false }) paginator1: MatPaginator;
+  @ViewChild(MatPaginator, { static: false }) paginator2: MatPaginator;
+  @ViewChild(MatPaginator, { static: false }) paginator3: MatPaginator;
+  @ViewChild(MatSort, { static: false }) sort1: MatSort;
+  @ViewChild(MatSort, { static: false }) sort2: MatSort;
+  @ViewChild(MatSort, { static: false }) sort3: MatSort;
 
   formGroup: FormGroup;
   titleAlert = 'This field is required';
@@ -57,9 +90,15 @@ export class ExpansesComponent implements OnInit {
   individualExpanseSpent: any;
   totalAmountSpent: any;
   perHeadAmountSpent: number;
+  perHeadCommonExpanseAmountSpent: number;
+  allExpanseObj: any;
+  allCommonExpanseObj: any;
   constructor(private formBuilder: FormBuilder, private commonService: CommonService,
               private router: Router, private snackBar: MatSnackBar,
-              public matDialog: MatDialog) { }
+              public matDialog: MatDialog) {
+              this.getAllExpanses();
+              this.getAllCommonExpanses();
+              }
 
   ngOnInit() {
     this.createForm();
@@ -72,7 +111,33 @@ export class ExpansesComponent implements OnInit {
     });
 
   }
+  ngAfterViewInit() {
+    
+  }
+  applyFilter_one(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.dataSource_one.filter = filterValue.trim().toLowerCase();
 
+    if (this.dataSource_one.paginator) {
+      this.dataSource_one.paginator.firstPage();
+    }
+  }
+  applyFilter_two(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.dataSource_two.filter = filterValue.trim().toLowerCase();
+
+    if (this.dataSource_two.paginator) {
+      this.dataSource_two.paginator.firstPage();
+    }
+  }
+  applyFilter_three(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.dataSource_three.filter = filterValue.trim().toLowerCase();
+
+    if (this.dataSource_three.paginator) {
+      this.dataSource_three.paginator.firstPage();
+    }
+  }
   createForm() {
     this.formGroup = this.formBuilder.group({
       names: [null, Validators.required],
@@ -140,6 +205,23 @@ export class ExpansesComponent implements OnInit {
       }
     });
   }
+  uploadACommonExpanse(data) {
+    const payLoad = {
+      expanseName: data.name,
+      expanseAmount: data.amount
+  };
+    this.commonService.uploadACommonExpanse(`commonExpanseUpload`, payLoad).subscribe(res => {
+      if (res.body.successID) {
+        this.message = res.body.message;
+        this.getAllCommonExpanses();
+      }
+    }, (err) => {
+      if (err) {
+        console.log(err);
+        this.message = err.error.message;
+      }
+    });
+  }
   addTopic() {
     const payLoad = {
       names: this.names
@@ -164,7 +246,7 @@ export class ExpansesComponent implements OnInit {
       if (element.value.toLowerCase() === spentBy.toLowerCase()) {
         this.commonService.addExpanseDetails(`expanseUpload`, { name: element.value, spentAmount, spentOn }).subscribe(res => {
           if (res.body.successID) {
-            // this.message = `${this.names[this.names.length - 1].name.toUpperCase()} has been added as your roommate.`;
+           this.getAllExpanses();
           }
         }, (err) => {
           if (err) {
@@ -188,6 +270,47 @@ export class ExpansesComponent implements OnInit {
       }
     });
     console.log(this.individualAmountSpent);
+  }
+   getAllExpanses() {
+    this.commonService.getAllExpanses(`getAllExpanses`).subscribe(res => {
+      if (res.body.data && res.body.data.length > 0) {
+        this.allExpanseObj = res.body.data;
+        this.allExpanseObj.forEach((e, i) => {
+          e.id = i + 1;
+        });
+        this.dataSource_one = new MatTableDataSource(this.allExpanseObj);
+        this.dataSource_one.paginator = this.paginator1;
+        this.dataSource_one.sort = this.sort1;
+      }
+    }, (err) => {
+      if (err) {
+        console.log(err);
+        this.message = err.error.message;
+      }
+    });
+  }
+   getAllCommonExpanses() {
+    this.commonService.getAllCommonExpanses(`getAllCommonExpanses`).subscribe(res => {
+      if (res.body.data && res.body.data.length > 0) {
+        this.allCommonExpanseObj = res.body.data;
+        this.allCommonExpanseObj.forEach((e, i) => {
+          e.id = i + 1;
+        });
+        let sum = 0;
+        this.allCommonExpanseObj.forEach(element => {
+          sum = sum + element.expanseAmount;
+        });
+        this.perHeadCommonExpanseAmountSpent = sum / this.nameChips.length;
+        this.dataSource_two = new MatTableDataSource(this.allCommonExpanseObj);
+        // this.dataSource_two.paginator = this.paginator2;
+        // this.dataSource_two.sort = this.sort2;
+      }
+    }, (err) => {
+      if (err) {
+        console.log(err);
+        this.message = err.error.message;
+      }
+    });
   }
   calculateExpanse(d) {
     this.individualExpanseSpent = d;
@@ -249,12 +372,10 @@ export class ExpansesComponent implements OnInit {
     const input = event.input;
     const value = event.value;
 
-    // Add our fruit
     if ((value || '').trim()) {
       this.commonExpanses.push({ name: value.trim() });
     }
 
-    // Reset the input value
     if (input) {
       input.value = '';
     }
@@ -275,6 +396,57 @@ export class ExpansesComponent implements OnInit {
       duration: 2000,
     });
   }
+  updateAExpanse(data) {
+    // data.role = data.role === 'Admin' ? 1 : data.role === 'Teacher' ? 2 : data.role === 'Student' ? 3 : 0;
+    const payload = {
+      _id: data._id,
+      spentAmount: data.spentAmount,
+      spentOn: data.spentOn
+    };
+    this.commonService.UpdateAExpanses('updateAExpanse', payload).subscribe(res => {
+      if (res) {
+        this.getAllExpanses();
+      } else {
+      }
+    });
+  }
+  updateACommonExpanse(data) {
+    // data.role = data.role === 'Admin' ? 1 : data.role === 'Teacher' ? 2 : data.role === 'Student' ? 3 : 0;
+    const payload = {
+      _id: data._id,
+      expanseAmount: data.expanseAmount
+    };
+    this.commonService.UpdateACommonExpanse('updateACommonExpanse', payload).subscribe(res => {
+      if (res) {
+        this.getAllCommonExpanses();
+      } else {
+      }
+    });
+  }
+  deleteAExpanse(data) {
+    // data.role = data.role === 'Admin' ? 1 : data.role === 'Teacher' ? 2 : data.role === 'Student' ? 3 : 0;
+    const payload = {
+      _id: data._id,
+    };
+    this.commonService.UpdateAExpanses('deleteAExpanse', payload).subscribe(res => {
+      if (res) {
+        this.getAllExpanses();
+      } else {
+      }
+    });
+  }
+  deleteACommonExpanse(data) {
+    // data.role = data.role === 'Admin' ? 1 : data.role === 'Teacher' ? 2 : data.role === 'Student' ? 3 : 0;
+    const payload = {
+      _id: data._id,
+    };
+    this.commonService.deleteACommonExpanse('deleteACommonExpanse', payload).subscribe(res => {
+      if (res) {
+        this.getAllCommonExpanses();
+      } else {
+      }
+    });
+  }
   openDialog(action, obj) {
     obj.action = action;
     const dialogRef = this.matDialog.open(ManipulateComponent, {
@@ -282,15 +454,25 @@ export class ExpansesComponent implements OnInit {
       data: obj
     });
     dialogRef.afterClosed().subscribe(result => {
-      if (result.event === 'Add') {
-        // commonExpanses
+      if (result.event === 'AddACommonExpanse') {
         console.log('>>>>>>>result', result);
-        this.commonExpanses = this.commonExpanses.map(e => {
-          if (e.name === result.data.name) {
-            e.amount = result.data.amount;
-          }
-          return e;
-        });
+        this.uploadACommonExpanse(result.data);
+      }
+      if (result.event === 'UpdateExpanse1') {
+        console.log('>>>>>>>result', result);
+        this.updateAExpanse(result.data);
+      }
+      if (result.event === 'Delete') {
+        console.log('>>>>>>>result', result);
+        this.deleteAExpanse(result.data);
+      }
+      if (result.event === 'updateACommonExpanse') {
+        console.log('>>>>>>>result', result);
+        this.updateACommonExpanse(result.data);
+      }
+      if (result.event === 'DeleteCommonExpanse') {
+        console.log('>>>>>>>result', result);
+        this.deleteACommonExpanse(result.data);
       }
     });
   }

@@ -6,3 +6,12 @@ table {
     width: 250px;
     height: 250px
 }
+.p-right {
+  padding-right: 35px;
+  cursor: pointer;
+}
+@media only screen and (max-width: 1092px) { 
+  .p-right {
+    padding-right: 0px
+  }
+}

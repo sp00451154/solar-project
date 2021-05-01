@@ -13,7 +13,7 @@
   
   .form {
     min-width: 150px;
-    max-width: 500px;
+    /* max-width: 500px; */
     width: 100%;
   }
   
@@ -33,5 +33,24 @@
   }
   .mat-stepper-vertical {
     margin-top: 8px;
+  }
+  table {
+    width: 100%;
+  }
+  
+  th.mat-sort-header-sorted {
+    color: black;
+  }
+  .mat-table, .mat-paginator {
+    background-color: unset;
+  }
+  .p-right {
+    padding-right: 35px;
+    cursor: pointer;
+  }
+  @media only screen and (max-width: 1092px) { 
+    .p-right {
+      padding-right: 0px
+    }
   }
   
