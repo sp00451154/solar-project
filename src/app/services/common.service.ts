@@ -69,6 +69,12 @@ export class CommonService {
       catchError(this.errorHandler)
     );
   }
+  uploadRoommates(path: string, data: {}): Observable<any> {
+    return this.http.post(`${environment.apiUrl}/${path}`, data, this.httpOptions)
+    .pipe(
+      catchError(this.errorHandler)
+    );
+  }
   addExpanseDetails(path: string, data: {}): Observable<any> {
     return this.http.post(`${environment.apiUrl}/${path}`, data, this.httpOptions)
     .pipe(
@@ -82,6 +88,12 @@ export class CommonService {
     );
   }
   getAllExpanses(path: string): Observable<any> {
+    return this.http.get(`${environment.apiUrl}/${path}`, this.httpOptions)
+    .pipe(
+      catchError(this.errorHandler)
+    );
+  }
+  getAllRoommates(path: string): Observable<any> {
     return this.http.get(`${environment.apiUrl}/${path}`, this.httpOptions)
     .pipe(
       catchError(this.errorHandler)
@@ -112,6 +124,12 @@ export class CommonService {
     );
   }
   deleteACommonExpanse(path: string, data: {}): Observable<any> {
+    return this.http.post(`${environment.apiUrl}/${path}`, data, this.httpOptions)
+    .pipe(
+      catchError(this.errorHandler)
+    );
+  }
+  deleteARoommate(path: string, data: {}): Observable<any> {
     return this.http.post(`${environment.apiUrl}/${path}`, data, this.httpOptions)
     .pipe(
       catchError(this.errorHandler)

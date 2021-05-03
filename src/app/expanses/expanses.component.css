@@ -53,4 +53,8 @@
       padding-right: 0px
     }
   }
+  .mat-cell, .mat-footer-cell {
+    color: rgb(8 34 217 / 87%) !important;
+    font-weight: 500 !important;
+}
   

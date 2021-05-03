@@ -45,7 +45,7 @@ export class ExpansesComponent implements OnInit, AfterViewInit  {
   private destroy$: Subject<void> = new Subject();
   displayedColumns_one: string[] = ['id', 'name', 'spentOn', 'spentAmount', 'action'];
   displayedColumns_two: string[] = ['id', 'expanseName', 'expanseAmount', 'action'];
-  displayedColumns_three: string[] = ['id', 'name', 'expanse', 'color'];
+  displayedColumns_three: string[] = ['name', 'finalExpanse'];
   dataSource_one: MatTableDataSource<Expanse1>;
   dataSource_two: MatTableDataSource<Expanse2>;
   dataSource_three: MatTableDataSource<Expanse3>;
@@ -63,9 +63,6 @@ export class ExpansesComponent implements OnInit, AfterViewInit  {
   message: any = '';
   response: boolean;
   nameChips = [
-    { value: 'SIBA', viewValue: 'SIBA' },
-    { value: 'BISWA', viewValue: 'BISWA' },
-    { value: 'MANTU', viewValue: 'MANTU' }
   ];
   visible = true;
   selectable = true;
@@ -78,9 +75,6 @@ export class ExpansesComponent implements OnInit, AfterViewInit  {
     { name: 'Mausi', amount: 0 },
   ];
   names: any = [
-    { name: 'SIBA' },
-    { name: 'BISWA' },
-    { name: 'MANTU' },
   ];
   spendObject = [];
   isLinear = false;
@@ -93,11 +87,15 @@ export class ExpansesComponent implements OnInit, AfterViewInit  {
   perHeadCommonExpanseAmountSpent: number;
   allExpanseObj: any;
   allCommonExpanseObj: any;
+  _nameChips = [];
+  finalExpanseObject = [];
   constructor(private formBuilder: FormBuilder, private commonService: CommonService,
               private router: Router, private snackBar: MatSnackBar,
               public matDialog: MatDialog) {
+              this.getAllRoommates();
               this.getAllExpanses();
               this.getAllCommonExpanses();
+              this.getFinalExpanse();
               }
 
   ngOnInit() {
@@ -222,22 +220,6 @@ export class ExpansesComponent implements OnInit, AfterViewInit  {
       }
     });
   }
-  addTopic() {
-    const payLoad = {
-      names: this.names
-    };
-    this.commonService.uploadTopics(`uploadTopics`, payLoad).subscribe(res => {
-      if (res.body.successID) {
-        this.nameChips = this.names.map(e => ({ value: e.name.toUpperCase(), viewValue: e.name.toUpperCase() }));
-        this.message = `${this.names[this.names.length - 1].name.toUpperCase()} has been added as your roommate.`;
-      }
-    }, (err) => {
-      if (err) {
-        console.log(err);
-        this.message = err.error.message;
-      }
-    });
-  }
   addExpanse() {
     const spentBy = (this.formGroup.get('expanseSpentBy').value);
     const spentOn = (this.expanseNameFormGroup.get('expanseName').value);
@@ -254,23 +236,27 @@ export class ExpansesComponent implements OnInit, AfterViewInit  {
             this.message = err.error.message;
           }
         });
-        const payLoad = {
-          names : this.nameChips.map(e => e.value)
-        };
-        this.commonService.getExpanses(`getExpanses`, payLoad).subscribe(res => {
-          if (res.body.data && res.body.data.length > 0) {
-            this.calculateExpanse(res.body.data);
-          }
-        }, (err) => {
-          if (err) {
-            console.log(err);
-            this.message = err.error.message;
-          }
-        });
+        this.getFinalExpanse();
       }
     });
     console.log(this.individualAmountSpent);
   }
+  private getFinalExpanse() {
+    const payLoad = {
+      names: this.nameChips.map(e => e.value)
+    };
+    this.commonService.getExpanses(`getExpanses`, payLoad).subscribe(res => {
+      if (res.body.data && res.body.data.length > 0) {
+        this.calculateExpanse(res.body.data);
+      }
+    }, (err) => {
+      if (err) {
+        console.log(err);
+        this.message = err.error.message;
+      }
+    });
+  }
+
    getAllExpanses() {
     this.commonService.getAllExpanses(`getAllExpanses`).subscribe(res => {
       if (res.body.data && res.body.data.length > 0) {
@@ -281,6 +267,23 @@ export class ExpansesComponent implements OnInit, AfterViewInit  {
         this.dataSource_one = new MatTableDataSource(this.allExpanseObj);
         this.dataSource_one.paginator = this.paginator1;
         this.dataSource_one.sort = this.sort1;
+      }
+    }, (err) => {
+      if (err) {
+        console.log(err);
+        this.message = err.error.message;
+      }
+    });
+  }
+   getAllRoommates() {
+    this.commonService.getAllRoommates(`getAllRoommates`).subscribe(res => {
+      if (res.body.data && res.body.data.length > 0) {
+        this.names = res.body.data.map(n => ({ name : n.displayName, _id : n._id}));
+        res.body.data.forEach(element => {
+          delete element._id;
+          delete element.__v;
+        });
+        this.nameChips = res.body.data;
       }
     }, (err) => {
       if (err) {
@@ -323,6 +326,17 @@ export class ExpansesComponent implements OnInit, AfterViewInit  {
     console.log('individualExpanseSpent', this.individualExpanseSpent);
     console.log('totalAmountSpent', this.totalAmountSpent);
     console.log('perHeadAmountSpent', this.perHeadAmountSpent);
+    // this.finalExpanseObject = this.individualExpanseSpent.map(e => (
+    //   {name : e._id , finalExpanse : this.perHeadAmountSpent - e.total + this.perHeadCommonExpanseAmountSpent}
+    //   ));
+    this.individualExpanseSpent.forEach(e => {
+      this.finalExpanseObject.push(
+        { name: e._id, finalExpanse: (this.perHeadAmountSpent - e.total + this.perHeadCommonExpanseAmountSpent) }
+      );
+    });
+    console.log('Final', this.finalExpanseObject);
+    this.dataSource_three = new MatTableDataSource(this.finalExpanseObject);
+
   }
   convertDate(d, type) {
     d = new Date(Date.parse(d));
@@ -343,7 +357,7 @@ export class ExpansesComponent implements OnInit, AfterViewInit  {
     // console.log('formattedDate++++', formattedDate);
     return formattedDate;
   }
-  addTopics(event: MatChipInputEvent): void {
+  addRoommates(event: MatChipInputEvent): void {
     const input = event.input;
     const value = event.value;
 
@@ -351,7 +365,21 @@ export class ExpansesComponent implements OnInit, AfterViewInit  {
     if ((value || '').trim()) {
       this.names.push({ name: value.trim() });
       if (this.names && this.names.length) {
-        this.addTopic();
+        // this.nameChips = this.names.map(e => ({ value: e.name.toUpperCase(), displayName: e.name.toUpperCase() , expanseAmount: 0}));
+        const payLoad = { value: value.toUpperCase(), displayName: value.toUpperCase() , expanseAmount: 0};
+        // const payLoad = {
+        //   names: this.names
+        // };
+        this.commonService.uploadRoommates(`addARoommate`, payLoad).subscribe(res => {
+          if (res.body.successID) {
+            this.getAllRoommates();
+          }
+        }, (err) => {
+          if (err) {
+            console.log(err);
+            this.message = err.error.message;
+          }
+        });
       }
     }
     // Reset the input value
@@ -360,13 +388,13 @@ export class ExpansesComponent implements OnInit, AfterViewInit  {
     }
   }
 
-  removeTopics(fruit: any): void {
-    const index = this.names.indexOf(fruit);
+  removeRoommates(id: any): void {
+    this.deleteARoommate(id);
 
-    if (index >= 0) {
-      this.names.splice(index, 1);
-      this.nameChips = this.names.map(e => ({ value: e.name.toUpperCase(), viewValue: e.name.toUpperCase() }));
-    }
+    // if (index >= 0) {
+    //   this.names.splice(index, 1);
+    //   this.nameChips = this.names.map(e => ({ value: e.name.toUpperCase(), displayName: e.name.toUpperCase() }));
+    // }
   }
   addLinks(event: MatChipInputEvent): void {
     const input = event.input;
@@ -443,6 +471,18 @@ export class ExpansesComponent implements OnInit, AfterViewInit  {
     this.commonService.deleteACommonExpanse('deleteACommonExpanse', payload).subscribe(res => {
       if (res) {
         this.getAllCommonExpanses();
+      } else {
+      }
+    });
+  }
+  deleteARoommate(id) {
+    // data.role = data.role === 'Admin' ? 1 : data.role === 'Teacher' ? 2 : data.role === 'Student' ? 3 : 0;
+    const payload = {
+      _id: id,
+    };
+    this.commonService.deleteARoommate('deleteARoommate', payload).subscribe(res => {
+      if (res) {
+        this.getAllRoommates();
       } else {
       }
     });
